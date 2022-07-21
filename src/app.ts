@@ -1,4 +1,4 @@
-import express, { Express, Request, Response } from 'express';
+import express, { Application, Express, Request, Response } from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import morgan from 'morgan';
@@ -8,15 +8,14 @@ import Controller from '@/utils/interfaces/controller.interface';
 import ErrorMiddleware from '@/middleware/error.middleware';
 
 class App {
-  public app: Express;
+  public app: Application;
 
-  public port: number;
-
-  constructor(controllers: Controller[], port: number) {
+  constructor(controllers: Controller[]) {
     this.app = express();
-    this.port = port;
 
-    this.initializeDBConnection();
+    if (process.env.NODE_ENV !== 'test') {
+      this.initializeDBConnection();
+    }
     this.initializeMiddleware();
     this.initializeControllers(controllers);
     this.initializeErrorHandling();
@@ -48,9 +47,9 @@ class App {
     this.app.use(ErrorMiddleware);
   }
 
-  public listen(): void {
-    this.app.listen(this.port, () => {
-      console.log(`⚡️[server]: Server is running at http://localhost:${this.port}`);
+  public listen(port: number): void {
+    this.app.listen(port, () => {
+      console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
     });
   }
 }
