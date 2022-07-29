@@ -8,6 +8,9 @@ function validateEnv(): void {
     MONGODB_URI: str(),
     PORT: port({ default: 8000 }),
     MONGODB_URI_TEST: str(),
+    JWT_SECRET: str(),
+    GOOGLE_CLIENT_ID: str(),
+    GOOGLE_CLIENT_SECRET: str(),
   });
 }
 
