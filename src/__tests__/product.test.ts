@@ -107,7 +107,7 @@ describe("Product", () => {
         });
     });
   });
-  
+
   describe(`EDIT /api/products/:id`, () => {
     test("should update a product", async () => {
       const oldProduct = await request
