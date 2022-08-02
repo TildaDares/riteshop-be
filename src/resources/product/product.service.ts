@@ -27,7 +27,7 @@ class ProductService {
 
   public async findProducts(name: string) {
     try {
-      if (name) { 
+      if (name) {
         const products = await this.product.aggregate().search({
           index: 'searchProducts',
           text: {
@@ -43,7 +43,7 @@ class ProductService {
           throw new Error("No products match that query")
         }
         return products;
-      } 
+      }
     } catch (error) {
       throw new Error("Unable to find products that match your search term");
     }

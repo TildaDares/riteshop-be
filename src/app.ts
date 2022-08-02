@@ -6,6 +6,8 @@ import helmet from 'helmet';
 import compression from 'compression';
 import Controller from '@/utils/interfaces/controller.interface';
 import ErrorMiddleware from '@/middleware/error.middleware';
+import "./config/passport";
+import passport from "passport";
 
 class App {
   public app: Application;
@@ -22,7 +24,7 @@ class App {
   }
 
   private initializeDBConnection(): void {
-    const MONGODB_URI = process.env.MONGODB_URI || '';
+    const MONGODB_URI = process.env.MONGODB_URI as string;
     mongoose.connect(MONGODB_URI);
     const db = mongoose.connection;
     db.on("error", console.error.bind(console, "MongoDB connection error:"));
@@ -41,6 +43,7 @@ class App {
     controllers.forEach((controller) => {
       this.app.use('/api', controller.router);
     });
+    this.app.use(passport.initialize());
   }
 
   private initializeErrorHandling(): void {
