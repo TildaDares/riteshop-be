@@ -18,9 +18,9 @@ passport.use(
         user = await User.create({
           googleId: profile.id,
           name: profile.displayName,
+          // we are using optional chaining because profile.emails may be undefined.
           email: profile.emails?.[0].value,
           role: "customer",
-          // we are using optional chaining because profile.emails may be undefined.
         });
         if (user) {
           createToken(user);

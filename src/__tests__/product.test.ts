@@ -3,14 +3,40 @@ import { MongoMemoryServer } from "mongodb-memory-server";
 import { connect, disconnect, connection } from "mongoose";
 import App from "@/app";
 import ProductController from "@/resources/product/product.controller";
+import UserController from "@/resources/user/user.controller";
 
-const app = new App([new ProductController()]).app;
+const app = new App([new ProductController(), new UserController()]).app;
 const request = supertest(app);
+let customerToken: string | null = null;
+let adminToken: string | null = null;
 
 describe("Product", () => {
   beforeAll(async () => {
     const mongoServer = await MongoMemoryServer.create();
     await connect(mongoServer.getUri(), { dbName: "riteshop-test" });
+
+    // create customer and admin users
+    const resCustomer = await request
+      .post("/api/users/register")
+      .send({
+        name: "customer one",
+        email: "customerone@gmail.com",
+        password: "ilovemangoes",
+        role: "customer"
+      })
+
+    customerToken = resCustomer.body.token;
+
+    const resAdmin = await request
+      .post("/api/users/register")
+      .send({
+        name: "admin",
+        email: "admin@example.com",
+        password: "flamingoesarecute_12345",
+        role: "admin"
+      })
+
+    adminToken = resAdmin.body.token;
   });
 
   afterAll(async () => {
@@ -19,8 +45,8 @@ describe("Product", () => {
   });
 
   describe(`POST /api/products`, () => {
-    test("It should create a new product", (done) => {
-      request
+    test("should create a new product", async () => {
+      const res = await request
         .post("/api/products")
         .send({
           name: "first",
@@ -28,35 +54,48 @@ describe("Product", () => {
           price: 600,
           quantity: 300,
         })
-        .expect(201)
-        .then((res) => {
-          expect(res.body._id).toBeTruthy();
-          expect(res.body.name).toBe("first");
-          done();
-        });
+        .set("Authorization", `Bearer ${adminToken}`)
+
+      expect(res.statusCode).toEqual(201);
+      expect(res.body.product._id).toBeTruthy();
+      expect(res.body.product.name).toBe("first");
     });
 
-    test("product should not be created if validation fails", (done) => {
-      request
+    test("should return 401 if user is not admin", async () => {
+      const res = await request
+        .post("/api/products")
+        .send({
+          name: "tyres",
+          description: "tyres for toy cars",
+          price: 1000,
+          quantity: 400,
+        })
+        .set("Authorization", `Bearer ${customerToken}`)
+
+      expect(res.statusCode).toEqual(401);
+    });
+
+    test("product should not be created if validation fails", async () => {
+      const res = await request
         .post("/api/products")
         .send({
           description: "first product",
           price: 600,
           quantity: 300,
         })
-        .expect(400, done);
+        .set("Authorization", `Bearer ${adminToken}`)
+
+      expect(res.statusCode).toEqual(400);
     });
   });
 
   describe(`GET /api/products`, () => {
-    test("should return all products", (done) => {
-      request
+    test("should return all products", async () => {
+      const res = await request
         .get("/api/products")
-        .expect(200)
-        .then((res) => {
-          expect(res.body).toHaveLength(1);
-          done();
-        });
+
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.products).toHaveLength(1);
     });
   });
 
@@ -70,41 +109,37 @@ describe("Product", () => {
           price: 1000,
           quantity: 100,
         })
+        .set("Authorization", `Bearer ${adminToken}`)
         .expect(201);
 
-      const oldID = oldProduct.body._id;
+      const oldID = oldProduct.body.product._id;
 
-      request
+      const res = await request
         .get(`/api/products/${oldID}`)
-        .expect(200)
-        .then((res) => {
-          expect(res.body._id).toBe(oldID);
-          expect(res.body.description).toBe(oldProduct.body.description);
-        });
+
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.product._id).toBe(oldID);
+      expect(res.body.product.description).toBe(oldProduct.body.product.description);
     });
   });
 
   // TODO: Fix 404 error
   describe.skip(`GET /api/products/search/:name`, () => {
-    test("should return products that match search term", (done) => {
-      request
+    test("should return products that match search term", async () => {
+      const res = await request
         .get("/api/products/search/fir")
-        .expect(200)
-        .then((res) => {
-          expect(res.body).toHaveLength(1);
-          done();
-        });
+
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.products).toHaveLength(1);
     });
 
-    test("should fuzzy match search term", (done) => {
-      request
+    test("should fuzzy match search term", async () => {
+      const res = await request
         .get("/api/products/search/spreod")
-        .expect(200)
-        .then((res) => {
-          expect(res.body).toHaveLength(1);
-          expect(res.body.name).toBe("bed spread");
-          done();
-        });
+
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.products).toHaveLength(1);
+      expect(res.body.products[0].name).toBe("bed spread");
     });
   });
 
@@ -118,9 +153,10 @@ describe("Product", () => {
           price: 200,
           quantity: 100,
         })
+        .set("Authorization", `Bearer ${adminToken}`)
         .expect(201);
 
-      const oldID = oldProduct.body._id;
+      const oldID = oldProduct.body.product._id;
       const product = {
         name: "third",
         description: "third product",
@@ -128,14 +164,39 @@ describe("Product", () => {
         quantity: 200,
       };
 
-      await request
+      const res = await request
         .put(`/api/products/${oldID}`)
         .send(product)
-        .expect(200)
-        .then((res) => {
-          expect(res.body._id).toBe(oldID);
-          expect(res.body.name).toBe("third");
-        });
+        .set("Authorization", `Bearer ${adminToken}`)
+
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.product._id).toBe(oldID);
+      expect(res.body.product.name).toBe("third");
+    });
+
+    test("product should not be updated if user is not admin", async () => {
+      const oldProduct = await request
+        .post("/api/products")
+        .send({
+          name: "fifth",
+          description: "fifth product",
+          price: 400,
+          quantity: 400,
+        })
+        .set("Authorization", `Bearer ${adminToken}`)
+        .expect(201);
+
+      const oldID = oldProduct.body.product._id;
+      const product = {
+        name: "fifth prod",
+        description: "fifth product is updated",
+        quantity: 100,
+      };
+
+      await request.put(`/api/products/${oldID}`)
+        .send(product)
+        .set("Authorization", `Bearer ${customerToken}`)
+        .expect(401);
     });
 
     test("product should not be updated if validation fails", async () => {
@@ -147,6 +208,7 @@ describe("Product", () => {
           price: 400,
           quantity: 400,
         })
+        .set("Authorization", `Bearer ${adminToken}`)
         .expect(201);
 
       const oldID = oldProduct.body._id;
@@ -156,7 +218,10 @@ describe("Product", () => {
         quantity: 200,
       };
 
-      await request.put(`/api/products/${oldID}`).send(product).expect(400);
+      await request.put(`/api/products/${oldID}`)
+        .send(product)
+        .set("Authorization", `Bearer ${adminToken}`)
+        .expect(400);
     });
   });
 
@@ -170,13 +235,37 @@ describe("Product", () => {
           price: 5000,
           quantity: 1200,
         })
+        .set("Authorization", `Bearer ${adminToken}`)
         .expect(201);
 
-      const oldID = oldProduct.body._id;
+      const oldID = oldProduct.body.product._id;
 
-      request.get(`/api/products/${oldID}`).expect(200);
-      request.delete(`/api/products/${oldID}`).expect(204);
-      request.get(`/api/products/${oldID}`).expect(400);
+      await request.get(`/api/products/${oldID}`).expect(200);
+      await request.delete(`/api/products/${oldID}`)
+        .set("Authorization", `Bearer ${adminToken}`)
+        .expect(204);
+      await request.get(`/api/products/${oldID}`).expect(404);
+    });
+
+    test("should not delete a product if user is not admin", async () => {
+      const oldProduct = await request
+        .post("/api/products")
+        .send({
+          name: "bathing suits",
+          description: "bathing suits for bathing",
+          price: 1000,
+          quantity: 1300,
+        })
+        .set("Authorization", `Bearer ${adminToken}`)
+        .expect(201);
+
+      const oldID = oldProduct.body.product._id;
+
+      await request.get(`/api/products/${oldID}`).expect(200);
+      await request.delete(`/api/products/${oldID}`)
+        .set("Authorization", `Bearer ${customerToken}`)
+        .expect(401);
+      await request.get(`/api/products/${oldID}`).expect(200);
     });
   });
 });
