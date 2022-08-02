@@ -6,6 +6,8 @@ import HTTPException from '@/utils/exceptions/http.exception';
 import validationMiddleware from '@/middleware/validation.middleware';
 import validate from '@/resources/product/product.validation';
 import ProductService from '@/resources/product/product.service';
+import authenticated from "@/middleware/authenticated.middleware";
+import isAdmin from "@/middleware/authorized.middleware";
 
 class ProductController implements Controller {
   public path = '/products';
@@ -21,16 +23,16 @@ class ProductController implements Controller {
   private initializeRoutes(): void {
     this.router.get(`${this.path}/search/:name`, this.findProducts);
     this.router.get(`${this.path}/:id`, this.getProductById);
-    this.router.put(`${this.path}/:id`, validationMiddleware(validate.create), this.edit);
-    this.router.delete(`${this.path}/:id`, this.delete);
-    this.router.post(`${this.path}`, validationMiddleware(validate.create), this.create);
+    this.router.put(`${this.path}/:id`, authenticated, isAdmin, validationMiddleware(validate.create), this.edit);
+    this.router.delete(`${this.path}/:id`, authenticated, isAdmin, this.delete);
+    this.router.post(`${this.path}`, authenticated, isAdmin, validationMiddleware(validate.create), this.create);
     this.router.get(`${this.path}`, this.getAllProducts);
   }
 
   private getAllProducts = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
       const products = await this.ProductService.getAllProducts();
-      res.status(200).json(products)
+      res.status(200).json({ products })
     } catch (error) {
       next(new HTTPException(404, error.message));
     }
@@ -39,7 +41,7 @@ class ProductController implements Controller {
   private getProductById = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
       const product = await this.ProductService.getProductById(req.params.id);
-      res.status(200).json(product)
+      res.status(200).json({ product })
     } catch (error) {
       next(new HTTPException(404, error.message));
     }
@@ -47,8 +49,8 @@ class ProductController implements Controller {
 
   private findProducts = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
-      const product = await this.ProductService.findProducts(req.params.name);
-      res.status(200).json(product)
+      const products = await this.ProductService.findProducts(req.params.name);
+      res.status(200).json({ products })
     } catch (error) {
       next(new HTTPException(404, error.message));
     }
@@ -57,7 +59,7 @@ class ProductController implements Controller {
   private create = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
       const product = await this.ProductService.create(req.body);
-      res.status(201).json(product);
+      res.status(201).json({ product });
     } catch (error) {
       next(new HTTPException(400, error.message));
     }
@@ -66,7 +68,7 @@ class ProductController implements Controller {
   private edit = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
       const product = await this.ProductService.edit(req.params.id, req.body);
-      res.status(200).json(product);
+      res.status(200).json({ product });
     } catch (error) {
       next(new HTTPException(400, error.message));
     }
@@ -75,7 +77,7 @@ class ProductController implements Controller {
   private delete = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
       await this.ProductService.delete(req.params.id);
-      res.status(204).send({message: "Product deleted"});
+      res.status(204).send({ message: "Product deleted" });
     } catch (error) {
       next(new HTTPException(400, error.message));
     }
