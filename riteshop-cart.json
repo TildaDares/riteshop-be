@@ -1,0 +1,1 @@
+{"_id":{"$oid":"62ea982d9cb1f6329d0b3a42"},"user":{"$oid":"62e8e06cb161f7f3056754dd"},"items":[{"product":{"$oid":"62d971137d644d33a014265b"},"quantity":20,"_id":{"$oid":"62ea9900ac8f1abc07a8dc4e"}}],"bill":4000,"createdAt":{"$date":"2022-08-03T15:45:49.102Z"},"updatedAt":{"$date":"2022-08-03T15:50:08.058Z"},"__v":2}
