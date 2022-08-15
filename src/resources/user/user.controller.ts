@@ -31,7 +31,7 @@ class UserController implements Controller {
     );
     this.router.get(`${this.path}`, authenticated, this.getUser);
     this.router.get(`${this.path}/:id`, authenticated, this.getUserById);
-    this.router.put(`${this.path}/:id`, authenticated, validationMiddleware(validate.register), this.edit);
+    this.router.put(`${this.path}/:id`, authenticated, validationMiddleware(validate.edit), this.edit);
     this.router.delete(`${this.path}/:id`, authenticated, this.delete);
   };
 
@@ -90,7 +90,7 @@ class UserController implements Controller {
       if (!this.isAuthorized(user, req.params.id)) {
         return next(new HTTPException(401, "You don't have enough permissions to perform this action"));
       }
-      const updatedUser = await this.UserService.edit(req.params.id, req.body, user.role);
+      const updatedUser = await this.UserService.edit(req.params.id, req.body);
       res.status(200).json({ user: updatedUser });
     } catch (error) {
       next(new HTTPException(400, error.message));

@@ -158,7 +158,6 @@ describe("User", () => {
         name: "admin upgraded",
         email: ADMIN.email,
         role: ADMIN.role,
-        password: ADMIN.password,
       };
 
       const res = await request
@@ -176,7 +175,6 @@ describe("User", () => {
         name: "customer two",
         email: CUSTOMER.email,
         role: "admin",
-        password: CUSTOMER.password,
       };
 
       const res = await request
@@ -195,7 +193,6 @@ describe("User", () => {
         .put(`/api/users/${customerId}`)
         .set("Authorization", `Bearer ${customerToken}`)
         .send({
-          name: "customer two",
           email: CUSTOMER.email,
           role: "customer",
         })

@@ -1,7 +1,6 @@
 import UserModel from "@/resources/user/user.model";
-import User from "@/resources/user/user.interface";
 import { createToken } from "@/utils/token";
-import { hashSync } from "bcrypt";
+import User from "./user.interface";
 
 class UserService {
   private user = UserModel;
@@ -78,13 +77,13 @@ class UserService {
     }
   }
 
-  public async edit(id: string, user: User, role: string) {
+  public async edit(id: string, userUpdate: User) {
     try {
-      user.password = hashSync(user.password, 10); // encrypt the password before updating
-      if (role !== 'admin') { // only admins can change roles
-        user.role = role;
+      const user = await this.user.findById(id) as User;
+      if (user.role !== 'admin') { // only admins can change roles
+        userUpdate.role = user.role;
       }
-      const updatedUser = await this.user.findByIdAndUpdate(id, user, { new: true }).select('-password').exec();
+      const updatedUser = await this.user.findByIdAndUpdate(id, userUpdate, { new: true }).select('-password').exec();
 
       if (!updatedUser) {
         throw new Error("Unable to update user");
