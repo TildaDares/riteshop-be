@@ -58,7 +58,7 @@ class ProductService {
     }
   }
 
-  public async edit(id: string, product: Product) {
+  public async update(id: string, product: Product) {
     try {
       const updatedProduct = await this.product
         .findByIdAndUpdate(id, product, { new: true })
@@ -68,7 +68,7 @@ class ProductService {
       }
       return updatedProduct;
     } catch (error) {
-      throw new Error("Unable to edit product");
+      throw new Error("Unable to update product");
     }
   }
 
