@@ -1,6 +1,7 @@
 import { Schema, model } from "mongoose";
 import { compare, hash } from "bcrypt";
 import User from "@/resources/user/user.interface";
+import { RoleEnum } from '@/utils/enums/role.enum';
 
 const UserSchema = new Schema(
   {
@@ -21,8 +22,8 @@ const UserSchema = new Schema(
     },
     role: {
       type: String,
-      default: 'customer',
-      enum: ['customer', 'admin', 'salesagent']
+      default: RoleEnum.CUSTOMER,
+      enum: Object.values(RoleEnum)
     },
   },
   { timestamps: true }

@@ -31,7 +31,7 @@ class UserController implements Controller {
     );
     this.router.get(`${this.path}`, authenticated, this.getUser);
     this.router.get(`${this.path}/:id`, authenticated, this.getUserById);
-    this.router.put(`${this.path}/:id`, authenticated, validationMiddleware(validate.edit), this.edit);
+    this.router.put(`${this.path}/:id`, authenticated, validationMiddleware(validate.update), this.update);
     this.router.delete(`${this.path}/:id`, authenticated, this.delete);
   };
 
@@ -41,12 +41,11 @@ class UserController implements Controller {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      const { name, email, password, role } = req.body;
+      const { name, email, password} = req.body;
       const token = await this.UserService.register(
         name,
         email,
         password,
-        role
       );
       res.status(201).json({ token });
     } catch (error) {
@@ -84,13 +83,13 @@ class UserController implements Controller {
     }
   }
 
-  private edit = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+  private update = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
       const user = req.user as User;
       if (!this.isAuthorized(user, req.params.id)) {
         return next(new HTTPException(401, "You don't have enough permissions to perform this action"));
       }
-      const updatedUser = await this.UserService.edit(req.params.id, req.body);
+      const updatedUser = await this.UserService.update(req.params.id, req.body);
       res.status(200).json({ user: updatedUser });
     } catch (error) {
       next(new HTTPException(400, error.message));

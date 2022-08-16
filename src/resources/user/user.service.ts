@@ -1,6 +1,6 @@
 import UserModel from "@/resources/user/user.model";
 import { createToken } from "@/utils/token";
-import User from "./user.interface";
+import User from "@/resources/user/user.interface";
 
 class UserService {
   private user = UserModel;
@@ -9,14 +9,12 @@ class UserService {
     name: string,
     email: string,
     password: string,
-    role: string
   ): Promise<string | Error> {
     try {
       const user = await this.user.create({
         name,
         email,
         password,
-        role: role || 'customer',
       });
 
       await user.save();
@@ -77,12 +75,8 @@ class UserService {
     }
   }
 
-  public async edit(id: string, userUpdate: User) {
+  public async update(id: string, userUpdate: User) {
     try {
-      const user = await this.user.findById(id) as User;
-      if (user.role !== 'admin') { // only admins can change roles
-        userUpdate.role = user.role;
-      }
       const updatedUser = await this.user.findByIdAndUpdate(id, userUpdate, { new: true }).select('-password').exec();
 
       if (!updatedUser) {

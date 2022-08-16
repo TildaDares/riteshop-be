@@ -6,6 +6,7 @@ import CartController from "@/resources/cart/cart.controller";
 import ProductController from "@/resources/product/product.controller";
 import UserController from "@/resources/user/user.controller";
 import Product from "@/resources/product/product.interface";
+import UserModel from "@/resources/user/user.model";
 
 const app = new App([new ProductController(), new UserController(), new CartController()]).app;
 const request = supertest(app);
@@ -43,13 +44,19 @@ describe("Cart", () => {
 
     customerToken2 = resCust2.body.token;
 
+    const ADMIN = {
+      name: "admin",
+      email: "admin@example.com",
+      password: "flamingoesarecute_12345",
+      role: "admin"
+    }
+    await UserModel.create(ADMIN); // create admin user
+
     const resAdmin = await request
-      .post("/api/users/register")
+      .post("/api/users/login")
       .send({
-        name: "admin",
-        email: "admin@example.com",
-        password: "flamingoesarecute_123456",
-        role: "admin"
+        email: ADMIN.email,
+        password: ADMIN.password,
       })
 
     adminToken = resAdmin.body.token;
