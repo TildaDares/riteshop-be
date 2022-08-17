@@ -4,15 +4,14 @@ import { connect, disconnect, connection } from "mongoose";
 import App from "@/app";
 import UserController from "@/resources/user/user.controller";
 import UserModel from "@/resources/user/user.model";
+import { ADMIN, CUSTOMERONE as CUSTOMER } from "./seed";
 
 const app = new App([new UserController()]).app;
 const request = supertest(app);
-const ADMIN = { name: "admin", email: "admin@example.com", password: "flamingoesarecute_12345", role: "admin" };
-const CUSTOMER = { name: "customer one", email: "customerone@gmail.com", password: "ilovemangoes"};
-let customerToken: string | null = null;
-let adminToken: string | null = null;
-let customerId: string | null = null;
-let adminId: string | null = null;
+let customerToken: string;
+let adminToken: string;
+let customerId: string;
+let adminId: string;
 
 describe("User", () => {
   beforeAll(async () => {

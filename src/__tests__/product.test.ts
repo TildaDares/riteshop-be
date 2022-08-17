@@ -5,11 +5,12 @@ import App from "@/app";
 import ProductController from "@/resources/product/product.controller";
 import UserController from "@/resources/user/user.controller";
 import UserModel from "@/resources/user/user.model";
+import { ADMIN, CUSTOMERONE } from "./seed";
 
 const app = new App([new ProductController(), new UserController()]).app;
 const request = supertest(app);
-let customerToken: string | null = null;
-let adminToken: string | null = null;
+let customerToken: string;
+let adminToken: string;
 
 describe("Product", () => {
   beforeAll(async () => {
@@ -19,20 +20,10 @@ describe("Product", () => {
     // create customer and admin users
     const resCustomer = await request
       .post("/api/users/register")
-      .send({
-        name: "customer one",
-        email: "customerone@gmail.com",
-        password: "ilovemangoes",
-      })
+      .send(CUSTOMERONE)
 
     customerToken = resCustomer.body.token;
 
-    const ADMIN = {
-      name: "admin",
-      email: "admin@example.com",
-      password: "flamingoesarecute_12345",
-      role: "admin"
-    }
     await UserModel.create(ADMIN); // create admin user
 
     const resAdmin = await request

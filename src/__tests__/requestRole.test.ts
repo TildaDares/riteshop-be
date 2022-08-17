@@ -5,6 +5,7 @@ import App from "@/app";
 import UserController from "@/resources/user/user.controller";
 import UserModel from "@/resources/user/user.model";
 import RequestRoleController from "@/resources/request-role/requestRole.controller";
+import { ADMIN, CUSTOMERONE, CUSTOMERTWO } from "./seed";
 
 const app = new App([new UserController(), new RequestRoleController()]).app;
 const request = supertest(app);
@@ -15,18 +16,6 @@ let requestRoleId2: string;
 let customerToken: string; // requested to be a salesagent
 let customerToken2: string; // requested to be an admin
 let adminToken: string;
-const ADMIN = {
-  name: "admin",
-  email: "admin@example.com",
-  password: "flamingoesarecute_12345",
-  role: "admin"
-}
-const CUSTOMER = {
-  name: "customer two",
-  email: "customertwo@gmail.com",
-  password: "flamingoesarecute_12345",
-  role: "customer"
-}
 
 describe("Cart", () => {
   beforeAll(async () => {
@@ -36,18 +25,13 @@ describe("Cart", () => {
     // create users
     const resCust1 = await request
       .post("/api/users/register")
-      .send({
-        name: "customer one",
-        email: "customerone@gmail.com",
-        password: "ilovemangoes",
-        role: "customer"
-      })
+      .send(CUSTOMERONE)
 
     customerToken = resCust1.body.token;
 
     const resCust2 = await request
       .post("/api/users/register")
-      .send(CUSTOMER)
+      .send(CUSTOMERTWO)
 
     customerToken2 = resCust2.body.token;
 
