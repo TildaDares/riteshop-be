@@ -4,11 +4,13 @@ import { connect, disconnect, connection } from "mongoose";
 import App from "@/app";
 import ProductController from "@/resources/product/product.controller";
 import UserController from "@/resources/user/user.controller";
+import UserModel from "@/resources/user/user.model";
+import { ADMIN, CUSTOMERONE } from "./seed";
 
 const app = new App([new ProductController(), new UserController()]).app;
 const request = supertest(app);
-let customerToken: string | null = null;
-let adminToken: string | null = null;
+let customerToken: string;
+let adminToken: string;
 
 describe("Product", () => {
   beforeAll(async () => {
@@ -18,22 +20,17 @@ describe("Product", () => {
     // create customer and admin users
     const resCustomer = await request
       .post("/api/users/register")
-      .send({
-        name: "customer one",
-        email: "customerone@gmail.com",
-        password: "ilovemangoes",
-        role: "customer"
-      })
+      .send(CUSTOMERONE)
 
     customerToken = resCustomer.body.token;
 
+    await UserModel.create(ADMIN); // create admin user
+
     const resAdmin = await request
-      .post("/api/users/register")
+      .post("/api/users/login")
       .send({
-        name: "admin",
-        email: "admin@example.com",
-        password: "flamingoesarecute_12345",
-        role: "admin"
+        email: ADMIN.email,
+        password: ADMIN.password,
       })
 
     adminToken = resAdmin.body.token;
@@ -143,7 +140,7 @@ describe("Product", () => {
     });
   });
 
-  describe(`EDIT /api/products/:id`, () => {
+  describe(`PUT /api/products/:id`, () => {
     test("should update a product", async () => {
       const oldProduct = await request
         .post("/api/products")

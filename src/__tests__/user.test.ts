@@ -3,20 +3,21 @@ import { MongoMemoryServer } from "mongodb-memory-server";
 import { connect, disconnect, connection } from "mongoose";
 import App from "@/app";
 import UserController from "@/resources/user/user.controller";
+import UserModel from "@/resources/user/user.model";
+import { ADMIN, CUSTOMERONE as CUSTOMER } from "./seed";
 
 const app = new App([new UserController()]).app;
 const request = supertest(app);
-const ADMIN = { name: "admin", email: "admin@example.com", password: "flamingoesarecute_12345", role: "admin" };
-const CUSTOMER = { name: "customer one", email: "customerone@gmail.com", password: "ilovemangoes", role: "customer" };
-let customerToken: string | null = null;
-let adminToken: string | null = null;
-let customerId: string | null = null;
-let adminId: string | null = null;
+let customerToken: string;
+let adminToken: string;
+let customerId: string;
+let adminId: string;
 
 describe("User", () => {
   beforeAll(async () => {
     const mongoServer = await MongoMemoryServer.create();
     await connect(mongoServer.getUri(), { dbName: "riteshop-test" });
+    UserModel.create(ADMIN); // create admin user
   });
 
   afterAll(async () => {
@@ -36,23 +37,12 @@ describe("User", () => {
       customerToken = res.body.token;
     });
 
-    test("should register a new user with admin role", async () => {
-      const res = await request
-        .post("/api/users/register")
-        .send(ADMIN)
-
-      expect(res.statusCode).toEqual(201);
-      expect(res.body.token).toBeTruthy();
-      adminToken = res.body.token;
-    });
-
     test("registration should fail if validation fails", async () => {
       const res = await request
         .post("/api/users/register")
         .send({
           name: "failure",
           password: "failuresarefailures",
-          role: "salesagent",
         })
 
       expect(res.statusCode).toEqual(400);
@@ -60,16 +50,17 @@ describe("User", () => {
   });
 
   describe(`POST /api/users/login`, () => {
-    test("should log user in", async () => {
+    test("should log user in(ADMIN)", async () => {
       const res = await request
         .post("/api/users/login")
         .send({
-          email: CUSTOMER.email,
-          password: CUSTOMER.password,
+          email: ADMIN.email,
+          password: ADMIN.password,
         })
 
       expect(res.statusCode).toEqual(200);
       expect(res.body.token).toBeTruthy();
+      adminToken = res.body.token;
     });
 
     test("login should fail if password or email is incorrect", async () => {
@@ -92,6 +83,7 @@ describe("User", () => {
 
       expect(res.statusCode).toEqual(200);
       expect(res.body.user._id).toBeTruthy();
+      expect(res.body.user.role).toBe("customer");
       expect(res.body.user.email).toBe(CUSTOMER.email);
       customerId = res.body.user._id;
     });
@@ -152,12 +144,11 @@ describe("User", () => {
     });
   });
 
-  describe(`EDIT /api/users/:id`, () => {
+  describe(`PUT /api/users/:id`, () => {
     test("should update a user", async () => {
       const user = {
         name: "admin upgraded",
         email: ADMIN.email,
-        role: ADMIN.role,
       };
 
       const res = await request
@@ -170,31 +161,12 @@ describe("User", () => {
       expect(res.body.user.name).toBe("admin upgraded");
     });
 
-    test("user role should not be updated if user is not admin ", async () => {
-      const user = {
-        name: "customer two",
-        email: CUSTOMER.email,
-        role: "admin",
-      };
-
-      const res = await request
-        .put(`/api/users/${customerId}`)
-        .set("Authorization", `Bearer ${customerToken}`)
-        .send(user)
-
-      expect(res.statusCode).toEqual(200);
-      expect(res.body.user._id).toBe(customerId);
-      expect(res.body.user.name).toBe("customer two");
-      expect(res.body.user.role).toBe(CUSTOMER.role);
-    });
-
     test("user should not be updated if validation fails", async () => {
       const res = await request
         .put(`/api/users/${customerId}`)
         .set("Authorization", `Bearer ${customerToken}`)
         .send({
           email: CUSTOMER.email,
-          role: "customer",
         })
 
       expect(res.statusCode).toEqual(400);

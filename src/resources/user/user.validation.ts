@@ -12,19 +12,15 @@ const register = Joi.object({
     .min(8)
     .max(30)
     .required(),
-  role: Joi.string()
-    .valid('customer', 'admin', 'salesagent'),
 });
 
-const edit = Joi.object({
+const update = Joi.object({
   name: Joi.string()
     .max(30)
     .required(),
   email: Joi.string()
     .email()
     .required(),
-  role: Joi.string()
-    .valid('customer', 'admin', 'salesagent'),
 });
 
 const login = Joi.object({
@@ -35,4 +31,4 @@ const login = Joi.object({
     .required(),
 });
 
-export default { register, edit, login };
+export default { register, update, login };

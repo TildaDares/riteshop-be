@@ -6,6 +6,8 @@ import CartController from "@/resources/cart/cart.controller";
 import ProductController from "@/resources/product/product.controller";
 import UserController from "@/resources/user/user.controller";
 import Product from "@/resources/product/product.interface";
+import UserModel from "@/resources/user/user.model";
+import { ADMIN, CUSTOMERONE, CUSTOMERTWO, PRODUCTONE, PRODUCTTWO } from "./seed";
 
 const app = new App([new ProductController(), new UserController(), new CartController()]).app;
 const request = supertest(app);
@@ -23,33 +25,23 @@ describe("Cart", () => {
     // create users
     const resCust1 = await request
       .post("/api/users/register")
-      .send({
-        name: "customer one",
-        email: "customerone@gmail.com",
-        password: "ilovemangoes",
-        role: "customer"
-      })
+      .send(CUSTOMERONE)
 
     customerToken = resCust1.body.token;
 
     const resCust2 = await request
       .post("/api/users/register")
-      .send({
-        name: "customer two",
-        email: "customertwo@gmail.com",
-        password: "flamingoesarecute_12345",
-        role: "customer"
-      })
+      .send(CUSTOMERTWO)
 
     customerToken2 = resCust2.body.token;
 
+    await UserModel.create(ADMIN); // create admin user
+
     const resAdmin = await request
-      .post("/api/users/register")
+      .post("/api/users/login")
       .send({
-        name: "admin",
-        email: "admin@example.com",
-        password: "flamingoesarecute_123456",
-        role: "admin"
+        email: ADMIN.email,
+        password: ADMIN.password,
       })
 
     adminToken = resAdmin.body.token;
@@ -57,24 +49,14 @@ describe("Cart", () => {
     // create products
     const resProduct1 = await request
       .post("/api/products")
-      .send({
-        name: "first",
-        description: "first product",
-        price: 600,
-        quantity: 300,
-      })
+      .send(PRODUCTONE)
       .set("Authorization", `Bearer ${adminToken}`)
 
     product1 = resProduct1.body.product;
 
     const resProduct2 = await request
       .post("/api/products")
-      .send({
-        name: "tyres",
-        description: "tyres for toy cars",
-        price: 1000,
-        quantity: 400,
-      })
+      .send(PRODUCTTWO)
       .set("Authorization", `Bearer ${adminToken}`)
 
     product2 = resProduct2.body.product;
