@@ -1,4 +1,4 @@
-import express, { Application, Express, Request, Response } from 'express';
+import express, { Application } from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import morgan from 'morgan';
@@ -6,8 +6,9 @@ import helmet from 'helmet';
 import compression from 'compression';
 import Controller from '@/utils/interfaces/controller.interface';
 import ErrorMiddleware from '@/middleware/error.middleware';
-import "./config/passport";
-import passport from "passport";
+import '@/config/passport';
+import { redisConfig } from '@/config/redis';
+import passport from 'passport';
 
 class App {
   public app: Application;
@@ -37,6 +38,9 @@ class App {
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: false }));
     this.app.use(compression());
+    (async () => {
+      await redisConfig();
+    })();
   }
 
   private initializeControllers(controllers: Controller[]): void {

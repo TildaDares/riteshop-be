@@ -173,6 +173,35 @@ describe("User", () => {
     });
   });
 
+  // https://github.com/yeahoffline/redis-mock/issues/197
+  describe.skip(`POST /api/users/logout`, () => {
+    test("should log user out", async () => {
+      const reqLogout = await request
+        .post('/api/users/logout')
+        .set("Authorization", `Bearer ${customerToken}`) // logout customer
+        .expect(200)
+        
+      expect(reqLogout.body.message).toEqual("Token invalidated")
+
+      const verifyLogout = await request
+        .get(`/api/users/${customerId}`)
+        .set("Authorization", `Bearer ${customerToken}`) // verify customer is logged out
+        .expect(401);
+
+      expect(verifyLogout.body.message).toEqual("JWT rejected")
+
+      const res = await request
+        .post("/api/users/login")
+        .send({
+          email: CUSTOMER.email,
+          password: CUSTOMER.password,
+        })
+        .expect(200); // log customer back in
+
+      customerToken = res.body.token;
+    });
+  });
+
   describe(`DELETE /api/users/:id`, () => {
     test("should delete a user with matching ID", async () => {
       await request

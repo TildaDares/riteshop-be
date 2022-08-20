@@ -6,6 +6,7 @@ import validate from "@/resources/user/user.validation";
 import UserService from "@/resources/user/user.service";
 import User from "@/resources/user/user.interface";
 import authenticated from "@/middleware/authenticated.middleware";
+import { redisClient as client } from '@/config/redis';
 
 class UserController implements Controller {
   public path = "/users";
@@ -28,6 +29,11 @@ class UserController implements Controller {
       `${this.path}/login`,
       validationMiddleware(validate.login),
       this.login
+    );
+    this.router.post(
+      `${this.path}/logout`,
+      authenticated,
+      this.logout
     );
     this.router.get(`${this.path}`, authenticated, this.getUser);
     this.router.get(`${this.path}/:id`, authenticated, this.getUserById);
@@ -58,6 +64,19 @@ class UserController implements Controller {
       const { email, password } = req.body;
       const token = await this.UserService.login(email, password);
       res.status(200).json({ token });
+    } catch (error) {
+      next(new HTTPException(400, error.message));
+    }
+  }
+
+  private logout = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+    try {
+      const { token, tokenExp } = req;
+      const token_key = `bl_${token}`;
+      await client.set(token_key, token, {
+        EXAT: tokenExp
+      });
+      res.status(200).send({ message: "Token invalidated" });
     } catch (error) {
       next(new HTTPException(400, error.message));
     }

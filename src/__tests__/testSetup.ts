@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-dotenv.config();
-const mongoDBURI = process.env.MONGODB_URI_TEST;
+dotenv.config({ path: `./.env.${process.env.NODE_ENV}` });
+const mongoDBURI = process.env.MONGODB_URI as string;
 
 const initializeTestingSetup = async () => {
   try {

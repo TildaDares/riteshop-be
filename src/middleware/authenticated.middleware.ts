@@ -4,6 +4,7 @@ import UserModel from '@/resources/user/user.model';
 import Token from '@/utils/interfaces/token.interface';
 import HTTPException from '@/utils/exceptions/http.exception';
 import { JsonWebTokenError } from 'jsonwebtoken';
+import { redisClient as client } from '@/config/redis';
 
 async function authenticatedMiddleware(req: Request, res: Response, next: NextFunction): Promise<Response | void> {
   const bearer = req.headers.authorization;
@@ -21,6 +22,12 @@ async function authenticatedMiddleware(req: Request, res: Response, next: NextFu
       return next(new HTTPException(401, "Unauthorised"));
     }
 
+    // token in deny list?
+    const inDenyList = await client.get(`bl_${accessToken}`);
+    if (inDenyList) {
+      return next(new HTTPException(401, "JWT Rejected"));
+    }
+
     const user = await UserModel.findById(payload.id)
       .select('-password')
       .exec();
@@ -30,6 +37,8 @@ async function authenticatedMiddleware(req: Request, res: Response, next: NextFu
     }
 
     req.user = user
+    req.tokenExp = payload.exp;
+    req.token = accessToken;
 
     return next();
   } catch (error) {
