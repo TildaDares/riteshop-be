@@ -15,6 +15,10 @@ To run this project on your local machine, do the following:
 - Copy the contents of the `env.example` file and rename to `.env`. You can change the values to setup your own database configuration.
 - Start the server by running `npm start`. This command will automatically run your app on http://localhost:8000/
 
-The frontend app of this project can be found [here]().
+The frontend app of this project can be found [here](https://gitlab.com/deimosdev/internships/se/projects/mathilda-riteshop/riteshop-fe).
+
+## Testing
+
+Run tests with `npm test`
 
 ## API Endpoints
