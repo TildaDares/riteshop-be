@@ -6,9 +6,9 @@
   "scripts": {
     "prebuild": "tslint -c tslint.json -p tsconfig.json --fix",
     "build": "npx tsc",
-    "start": "node dist/index.js",
-    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/index.js\"",
-    "test": "jest --watchAll --coverage --verbose --silent --runInBand"
+    "start": "NODE_ENV=development node dist/index.js",
+    "dev": "concurrently \"npx tsc --watch\" \"NODE_ENV=development nodemon -q dist/index.js\"",
+    "test": "NODE_ENV=test jest --watchAll --coverage --verbose --silent --runInBand"
   },
   "keywords": [],
   "author": "",
@@ -31,7 +31,8 @@
     "mongoose": "6.4.4",
     "morgan": "1.9.1",
     "passport": "0.6.0",
-    "passport-google-oauth20": "2.0.0"
+    "passport-google-oauth20": "2.0.0",
+    "redis": "4.2.0"
   },
   "devDependencies": {
     "@types/bcrypt": "5.0.0",
@@ -44,6 +45,7 @@
     "@types/node": "18.0.5",
     "@types/passport": "1.0.9",
     "@types/passport-google-oauth20": "2.0.11",
+    "@types/redis-mock": "0.17.1",
     "@types/supertest": "2.0.12",
     "@typescript-eslint/eslint-plugin": "5.30.7",
     "@typescript-eslint/parser": "5.30.7",
@@ -57,6 +59,7 @@
     "mongodb-memory-server": "8.7.2",
     "nodemon": "2.0.19",
     "prettier": "2.7.1",
+    "redis-mock": "0.56.3",
     "supertest": "6.2.4",
     "ts-jest": "28.0.7",
     "ts-node": "10.9.1",
@@ -67,6 +70,7 @@
     "@/app": "dist/app",
     "@/resources": "dist/resources",
     "@/utils": "dist/utils",
-    "@/middleware": "dist/middleware"
+    "@/middleware": "dist/middleware",
+    "@/config": "dist/config"
   }
 }
