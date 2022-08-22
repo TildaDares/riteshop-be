@@ -6,8 +6,8 @@
   "scripts": {
     "prebuild": "tslint -c tslint.json -p tsconfig.json --fix",
     "build": "npx tsc",
-    "start": "concurrently \"NODE_ENV=development node dist/index.js\" \"redis-server\"",
-    "dev": "concurrently \"npx tsc --watch\" \"NODE_ENV=development nodemon -q dist/index.js\" \"redis-server\"",
+    "start": "NODE_ENV=development node dist/index.js",
+    "dev": "concurrently \"npx tsc --watch\" \"NODE_ENV=development nodemon -q dist/index.js\"",
     "test": "NODE_ENV=test jest --watchAll --coverage --verbose --silent --runInBand"
   },
   "keywords": [],
