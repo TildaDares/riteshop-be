@@ -8,6 +8,7 @@
     "build": "npx tsc",
     "start": "NODE_ENV=development node dist/index.js",
     "dev": "concurrently \"npx tsc --watch\" \"NODE_ENV=development nodemon -q dist/index.js\"",
+    "dev:docker": "docker-compose -f docker-compose.dev.yaml up -d",
     "test": "NODE_ENV=test jest --watchAll --coverage --verbose --silent --runInBand"
   },
   "keywords": [],
