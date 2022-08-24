@@ -10,7 +10,7 @@ async function authenticatedMiddleware(req: Request, res: Response, next: NextFu
   const bearer = req.headers.authorization;
 
   if (!bearer || !bearer.startsWith('Bearer')) {
-    return next(new HTTPException(401, "Unauthorised"));
+    return next(new HTTPException(403, "Unauthorised"));
   }
 
   const accessToken = bearer.split('Bearer ')[1].trim();
@@ -19,13 +19,13 @@ async function authenticatedMiddleware(req: Request, res: Response, next: NextFu
     const payload: Token | JsonWebTokenError = await verifyToken(accessToken)
 
     if (payload instanceof JsonWebTokenError) {
-      return next(new HTTPException(401, "Unauthorised"));
+      return next(new HTTPException(403, "Unauthorised"));
     }
 
     // token in deny list?
     const inDenyList = await client.get(`bl_${accessToken}`);
     if (inDenyList) {
-      return next(new HTTPException(401, "JWT Rejected"));
+      return next(new HTTPException(403, "JWT Rejected"));
     }
 
     const user = await UserModel.findById(payload.id)
@@ -33,7 +33,7 @@ async function authenticatedMiddleware(req: Request, res: Response, next: NextFu
       .exec();
 
     if (!user) {
-      return next(new HTTPException(401, 'Unauthorised'));
+      return next(new HTTPException(403, 'Unauthorised'));
     }
 
     req.user = user
@@ -42,7 +42,7 @@ async function authenticatedMiddleware(req: Request, res: Response, next: NextFu
 
     return next();
   } catch (error) {
-    return next(new HTTPException(401, "Unauthorised"));
+    return next(new HTTPException(403, "Unauthorised"));
   }
 }
 
