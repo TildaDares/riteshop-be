@@ -32,7 +32,7 @@ class AuthController implements Controller {
       (req: Request, res: Response, next: NextFunction) => {
         try {
           const token = createToken(req.user as User)
-          res.cookie('authToken', token);
+          res.cookie('authToken', token, { expires: new Date(Date.now() + (3600 * 1000 * 24)) });
           res.redirect('http://localhost:3000/')
         } catch (error) {
           next(new HTTPException(400, error.message));
