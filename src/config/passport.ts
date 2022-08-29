@@ -1,7 +1,6 @@
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import User from "@/resources/user/user.model";
-import { createToken } from "@/utils/token";
 
 passport.use(
   new GoogleStrategy(
@@ -23,11 +22,9 @@ passport.use(
           role: "customer",
         });
         if (user) {
-          createToken(user);
           done(null, user);
         }
       } else {
-        createToken(user);
         done(null, user);
       }
     }

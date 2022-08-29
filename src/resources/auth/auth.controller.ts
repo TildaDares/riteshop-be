@@ -1,6 +1,9 @@
 import { Router, Request, Response, NextFunction } from "express";
 import Controller from "@/utils/interfaces/controller.interface";
 import passport from "passport";
+import { createToken } from "@/utils/token";
+import User from "@/resources/user/user.interface";
+import HTTPException from "@/utils/exceptions/http.exception";
 
 class AuthController implements Controller {
   public path = "/auth";
@@ -24,14 +27,19 @@ class AuthController implements Controller {
       `${this.path}/google/redirect`,
       passport.authenticate("google", {
         session: false,
-        // successRedirect: '/api/users',
         failureRedirect: '/api/login'
       }),
-      (req: Request, res: Response) => {
-        res.json({ message: "success" });
+      (req: Request, res: Response, next: NextFunction) => {
+        try {
+          const token = createToken(req.user as User)
+          res.cookie('authToken', token);
+          res.redirect('http://localhost:3000/')
+        } catch (error) {
+          next(new HTTPException(400, error.message));
+        }
       }
     )
-  };
+  }
 }
 
 export default AuthController;
