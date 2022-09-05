@@ -13,7 +13,7 @@ class CartService {
     try {
       const cart = await this.cart.findOne({ user: userId }).populate({
         path: 'items.product',
-        select: 'name description price image',
+        select: 'name description price image quantity',
       }).exec();
       if (!cart) {
         throw new Error("Unable to get cart");
@@ -113,7 +113,7 @@ class CartService {
           }
 
           const product = cart.items[productIndex];
-          if (quantity > product.quantity) {
+          if (quantity > (product.product as Product).quantity) {
             throw new Error("Not enough quantity");
           }
 
