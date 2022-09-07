@@ -99,11 +99,11 @@ describe("User", () => {
       adminId = res.body.user._id;
     });
 
-    test("should return 401 error if user is not logged in", async () => {
+    test("should return 403 error if user is not logged in", async () => {
       const res = await request
         .get('/api/users')
 
-      expect(res.statusCode).toEqual(401);
+      expect(res.statusCode).toEqual(403);
     });
   });
 
@@ -132,13 +132,6 @@ describe("User", () => {
       const res = await request
         .get(`/api/users/${adminId}`)
         .set("Authorization", `Bearer ${customerToken}`)
-
-      expect(res.statusCode).toEqual(401);
-    });
-
-    test("should return 401 error if user is not logged in", async () => {
-      const res = await request
-        .get('/api/users/')
 
       expect(res.statusCode).toEqual(401);
     });
@@ -173,6 +166,57 @@ describe("User", () => {
     });
   });
 
+  describe(`PUT /api/users/change-password/:id`, () => {
+    test("should update a user's password", async () => {
+      const passwords = {
+        oldPassword: CUSTOMER.password,
+        newPassword: "newpasswordsarefun",
+        confirmNewPassword: "newpasswordsarefun"
+      };
+
+      const res = await request
+        .put(`/api/users/change-password/${customerId}`)
+        .set("Authorization", `Bearer ${customerToken}`)
+        .send(passwords)
+
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.user._id).toBe(customerId);
+
+      // logging in with old password should fail
+      await request
+        .post("/api/users/login")
+        .send({
+          email: CUSTOMER.email,
+          password: CUSTOMER.password,
+        })
+        .expect(400)
+
+      // logging in with new password should succeed
+      await request
+        .post("/api/users/login")
+        .send({
+          email: CUSTOMER.email,
+          password: "newpasswordsarefun",
+        })
+        .expect(200)
+    });
+
+    test("password should not be updated if oldPassword doesn't match with curent password", async () => {
+      const passwords = {
+        oldPassword: "idontliketomatch",
+        newPassword: "newpasswordsarefun",
+        confirmNewPassword: "newpasswordsarefun"
+      };
+
+      const res = await request
+        .put(`/api/users/change-password/${customerId}`)
+        .set("Authorization", `Bearer ${customerToken}`)
+        .send(passwords)
+
+      expect(res.statusCode).toEqual(400);
+    });
+  });
+
   // https://github.com/yeahoffline/redis-mock/issues/197
   describe.skip(`POST /api/users/logout`, () => {
     test("should log user out", async () => {
@@ -180,7 +224,7 @@ describe("User", () => {
         .post('/api/users/logout')
         .set("Authorization", `Bearer ${customerToken}`) // logout customer
         .expect(200)
-        
+
       expect(reqLogout.body.message).toEqual("Token invalidated")
 
       const verifyLogout = await request

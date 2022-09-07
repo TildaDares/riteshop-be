@@ -23,6 +23,21 @@ const update = Joi.object({
     .required(),
 });
 
+const changePassword = Joi.object({
+  oldPassword: Joi.string()
+    .min(8)
+    .max(30)
+    .required(),
+  newPassword: Joi.string()
+    .min(8)
+    .max(30)
+    .required(),
+  confirmNewPassword: Joi.string()
+    .min(8)
+    .max(30)
+    .required(),
+});
+
 const login = Joi.object({
   email: Joi.string()
     .email()
@@ -31,4 +46,4 @@ const login = Joi.object({
     .required(),
 });
 
-export default { register, update, login };
+export default { register, update, changePassword, login };
