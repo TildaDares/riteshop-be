@@ -93,7 +93,7 @@ class UserService {
     try {
       const { oldPassword, newPassword, confirmNewPassword } = body
       if (newPassword !== confirmNewPassword) {
-        throw new Error('New Password and Confirm New Password does not match')
+        throw new Error('New Password and Confirm New Password do not match')
       }
 
       const user = await this.user.findById(id);
