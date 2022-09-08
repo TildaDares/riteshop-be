@@ -3,6 +3,5 @@
 node_modules
 dist
 coverage
-src/__tests__/seed.ts
 data
 dump.rdb
