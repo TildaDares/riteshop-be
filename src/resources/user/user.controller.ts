@@ -7,6 +7,7 @@ import UserService from "@/resources/user/user.service";
 import User from "@/resources/user/user.interface";
 import authenticated from "@/middleware/authenticated.middleware";
 import { redisClient as client } from '@/config/redis';
+import isAuthorized from '@/utils/helpers/authorization';
 
 class UserController implements Controller {
   public path = "/users";
@@ -93,7 +94,7 @@ class UserController implements Controller {
 
   private getUserById = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
-      if (!this.isAuthorized(req.user as User, req.params.id)) {
+      if (!isAuthorized(req.user as User, req.params.id)) {
         return next(new HTTPException(401, "You don't have enough permissions to perform this action"));
       }
       const user = await this.UserService.getUserById(req.params.id);
@@ -106,7 +107,7 @@ class UserController implements Controller {
   private update = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
       const user = req.user as User;
-      if (!this.isAuthorized(user, req.params.id)) {
+      if (!isAuthorized(user, req.params.id)) {
         return next(new HTTPException(401, "You don't have enough permissions to perform this action"));
       }
       const updatedUser = await this.UserService.update(req.params.id, req.body);
@@ -131,7 +132,7 @@ class UserController implements Controller {
 
   private delete = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
-      if (!this.isAuthorized(req.user as User, req.params.id)) {
+      if (!isAuthorized(req.user as User, req.params.id)) {
         return next(new HTTPException(401, "You don't have enough permissions to perform this action"));
       }
 
@@ -140,11 +141,6 @@ class UserController implements Controller {
     } catch (error) {
       next(new HTTPException(400, error.message));
     }
-  }
-
-  private isAuthorized = (currentUser: User, userId: string): boolean => {
-    const id = currentUser._id ? currentUser._id.toString() : '';
-    return currentUser.role === 'admin' || id === userId;
   }
 }
 
