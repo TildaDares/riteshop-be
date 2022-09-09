@@ -98,6 +98,10 @@ class OrderService {
         throw new Error("Cart not found")
       }
 
+      if (cart.items.length == 0) {
+        throw new Error("There are no items in the cart")
+      }
+
       const order = this.order.create({
         user: userId,
         shippingFee,
