@@ -9,6 +9,7 @@ import UserController from '@/resources/user/user.controller';
 import RequestRoleController from '@/resources/request-role/requestRole.controller';
 import AuthController from '@/resources/auth/auth.controller';
 import CartController from '@/resources/cart/cart.controller';
+import OrderController from '@/resources/order/order.controller';
 
 validateEnv();
 
@@ -17,7 +18,8 @@ const app = new App([
   new UserController(),
   new RequestRoleController,
   new ProductController(),
-  new CartController()
+  new CartController(),
+  new OrderController()
 ]);
 
 app.listen(Number(process.env.PORT));

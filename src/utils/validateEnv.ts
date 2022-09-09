@@ -10,6 +10,8 @@ function validateEnv(): void {
     JWT_SECRET: str(),
     GOOGLE_CLIENT_ID: str(),
     GOOGLE_CLIENT_SECRET: str(),
+    PAYPAL_CLIENT_ID: str(),
+    PAYPAL_APP_SECRET: str()
   });
 }
 
