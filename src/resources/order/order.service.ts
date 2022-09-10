@@ -42,10 +42,13 @@ class OrderService {
         throw new Error("Order not found");
       }
       if (order?.user.toString() != user._id?.toString() && user.role !== 'admin') {
-        throw (new HTTPException(401, "You don't have enough permissions to perform this action"));
+        throw new HTTPException(401, "You don't have enough permissions to perform this action");
       }
       return order;
     } catch (error) {
+      if (error instanceof HTTPException) {
+        throw error
+      }
       throw new Error(error.message);
     }
   }
@@ -123,9 +126,12 @@ class OrderService {
     try {
       await this.getOrderById(id, user)
       // only update orders that have not been delivered
-      const updatedOrder = await this.order.findOneAndUpdate({ _id: id, isDelivered: false }, { $set: { body } }, { new: true }) as Order
+      const updatedOrder = await this.order.findOneAndUpdate({ _id: id, isDelivered: false }, { $set: body }, { new: true }).exec() as Order
       return updatedOrder
     } catch (error) {
+      if (error instanceof HTTPException) {
+        throw error
+      }
       throw new Error(error.message);
     }
   }

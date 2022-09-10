@@ -55,7 +55,7 @@ class Paypal {
     return jsonData.access_token;
   }
 
-  private async handleResponse(response) {
+  private async handleResponse(response: any) {
     if (response.status === 200 || response.status === 201) {
       return response.json();
     }

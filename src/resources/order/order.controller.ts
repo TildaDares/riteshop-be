@@ -47,6 +47,9 @@ class OrderController implements Controller {
       const order = await this.OrderService.getOrderById(req.params.id, user);
       res.status(200).json({ order })
     } catch (error) {
+      if (error instanceof HTTPException) {
+        next(error)
+      }
       next(new HTTPException(404, error.message));
     }
   }
@@ -89,6 +92,9 @@ class OrderController implements Controller {
       const order = await this.OrderService.updateOrder(req.params.id, req.body, user);
       res.status(200).json({ order })
     } catch (error) {
+      if (error instanceof HTTPException) {
+        next(error)
+      }
       next(new HTTPException(404, error.message));
     }
   }

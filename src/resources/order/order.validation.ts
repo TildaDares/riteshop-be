@@ -21,7 +21,7 @@ const update = Joi.object({
     postalCode: Joi.string().trim().required(),
     tel: Joi.string().trim().required(),
     country: Joi.string().trim().required(),
-  }).required(),
+  }),
 });
 
 export default { create, update };

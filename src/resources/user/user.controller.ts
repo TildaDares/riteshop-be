@@ -120,7 +120,7 @@ class UserController implements Controller {
   private changePassword = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
       const user = req.user as User;
-      if (!this.isAuthorized(user, req.params.id)) {
+      if (!isAuthorized(user, req.params.id)) {
         return next(new HTTPException(401, "You don't have enough permissions to perform this action"));
       }
       const updatedUser = await this.UserService.changePassword(req.params.id, req.body);
