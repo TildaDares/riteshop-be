@@ -95,6 +95,12 @@ describe("Orders", () => {
 
   describe(`POST /api/orders`, () => {
     test("should create order", async () => {
+      const cartRes = await request
+        .get('/api/cart')
+        .set("Authorization", `Bearer ${customerToken}`)
+
+      expect(cartRes.body.cart.items).toHaveLength(2)
+
       const res = await request
         .post("/api/orders")
         .send({
@@ -113,6 +119,13 @@ describe("Orders", () => {
       expect(res.body.order.items).toHaveLength(2);
       expect(res.body.order.total).toEqual(bill + 15);
       orderId = res.body.order._id
+
+      // cart should be empty after creating an order
+      const cartRes2 = await request
+        .get('/api/cart')
+        .set("Authorization", `Bearer ${customerToken}`)
+
+      expect(cartRes2.body.cart.items).toHaveLength(0)
     });
 
     test("should return 400 if validation fails", async () => {
