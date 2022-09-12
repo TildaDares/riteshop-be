@@ -10,6 +10,7 @@ import validate from '@/resources/request-role/requestRole.validation';
 import isAdmin from "@/middleware/authorized.middleware";
 import User from '@/resources/user/user.interface';
 import RequestRole from '@/resources/request-role/requestRole.interface';
+import isAuthorized from '@/utils/helpers/authorization';
 
 class RoleController implements Controller {
   public path = '/request-role';
@@ -27,7 +28,7 @@ class RoleController implements Controller {
     this.router.put(`${this.path}/:id`, authenticated, isAdmin, validationMiddleware(validate.update), this.update);
     this.router.get(`${this.path}/`, authenticated, isAdmin, this.getAll);
     this.router.get(`${this.path}/requests/`, authenticated, this.getRequests);
-    this.router.get(`${this.path}/requests/:requester`, authenticated, isAdmin, this.getByRequester);
+    this.router.get(`${this.path}/requests/:requester`, authenticated, this.getByRequester);
     this.router.get(`${this.path}/:id`, authenticated, isAdmin, this.getById);
   }
 
@@ -45,7 +46,7 @@ class RoleController implements Controller {
     }
   }
 
-  private update = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {  
+  private update = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
       const user = req.user as User
       const roleRequest = {
@@ -82,6 +83,10 @@ class RoleController implements Controller {
 
   private getByRequester = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
+      const user = req.user as User
+      if (!isAuthorized(user, req.params.requester)) {
+        return next(new HTTPException(401, "You don't have enough permissions to perform this action"));
+      }
       const requests = await this.RequestRoleService.getByRequester(req.params.requester);
       res.status(200).json({ requests })
     } catch (error) {
