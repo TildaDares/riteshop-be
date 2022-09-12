@@ -22,7 +22,7 @@ class OrderService {
       const orders = await this.order.find({}).populate({
         path: 'items.product',
         select: 'image price quantity name',
-      }).sort({ createdAt: 1 }).exec();
+      }).sort({ createdAt: -1 }).exec();
       if (!orders) {
         throw new Error("No orders found");
       }
@@ -58,7 +58,7 @@ class OrderService {
       const orders = await this.order.find({ user: userId }).populate({
         path: 'items.product',
         select: 'image price quantity name',
-      }).sort({ createdAt: 1 }).exec();
+      }).sort({ createdAt: -1 }).exec();
       if (!orders) {
         throw new Error("No orders found");
       }
