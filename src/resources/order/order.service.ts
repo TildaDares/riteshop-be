@@ -79,11 +79,11 @@ class OrderService {
 
   public async capturePayment(paypalOrderId: string, orderId: string) {
     try {
+      const captureData = await this.paypal.capturePayment(paypalOrderId);
       const order = await this.order.findOneAndUpdate({ _id: orderId }, { $set: { isPaid: true, paymentMethod: 'paypal' } }).populate({
         path: 'items.product',
         select: 'price quantity',
       }).exec();
-      const captureData = await this.paypal.capturePayment(paypalOrderId);
       const promises = order?.items.map(async (item) => {
         const newQty = (item.product as Product).quantity - item.quantity
         await this.product.findOneAndUpdate({ _id: item.product._id }, { $set: { quantity: newQty < 0 ? 0 : newQty } })
