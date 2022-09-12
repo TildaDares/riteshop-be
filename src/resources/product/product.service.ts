@@ -1,13 +1,22 @@
 import ProductModel from "@/resources/product/product.model";
 import Product from "@/resources/product/product.interface";
+import APIFunctions from "@/utils/APIFunctions";
+import { ParsedQs } from "qs";
 
 class ProductService {
   private product = ProductModel;
 
-  public async getAllProducts(): Promise<Product[]> {
+  public async getAllProducts(query: ParsedQs) {
     try {
-      const products = await this.product.find({});
-      return products;
+      const specialFunctions = new APIFunctions(this.product.find(), query, this.product)
+        .filter()
+        .sort()
+        .limitFields()
+        .paginate();
+
+      const products = await specialFunctions.query
+      const total = await specialFunctions.count().total;
+      return { products, total, count: products.length };
     } catch (error) {
       throw new Error("Unable to get products");
     }
@@ -22,30 +31,6 @@ class ProductService {
       return product;
     } catch (error) {
       throw new Error("Unable to get product");
-    }
-  }
-
-  public async findProducts(name: string) {
-    try {
-      if (name) {
-        const products = await this.product.aggregate().search({
-          index: 'searchProducts',
-          text: {
-            query: name,
-            path: {
-              'wildcard': '*'
-            },
-            fuzzy: {},
-          },
-        })
-
-        if (!products) {
-          throw new Error("No products match that query")
-        }
-        return products;
-      }
-    } catch (error) {
-      throw new Error("Unable to find products that match your search term");
     }
   }
 
