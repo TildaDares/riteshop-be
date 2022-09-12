@@ -120,26 +120,6 @@ describe("Product", () => {
     });
   });
 
-  // TODO: Fix 404 error
-  describe.skip(`GET /api/products/search/:name`, () => {
-    test("should return products that match search term", async () => {
-      const res = await request
-        .get("/api/products/search/fir")
-
-      expect(res.statusCode).toEqual(200);
-      expect(res.body.products).toHaveLength(1);
-    });
-
-    test("should fuzzy match search term", async () => {
-      const res = await request
-        .get("/api/products/search/spreod")
-
-      expect(res.statusCode).toEqual(200);
-      expect(res.body.products).toHaveLength(1);
-      expect(res.body.products[0].name).toBe("bed spread");
-    });
-  });
-
   describe(`PUT /api/products/:id`, () => {
     test("should update a product", async () => {
       const oldProduct = await request

@@ -30,4 +30,16 @@ const ProductSchema = new Schema(
   { timestamps: true },
 );
 
+ProductSchema.index(
+  {
+    name: 'text',
+  },
+  {
+    weights: {
+      name: 3,
+      description: 2
+    },
+  }
+);
+
 export default model<Product>('Product', ProductSchema);

@@ -84,10 +84,11 @@ class OrderService {
         select: 'price quantity',
       }).exec();
       const captureData = await this.paypal.capturePayment(paypalOrderId);
-      order?.items.forEach((item) => {
+      const promises = order?.items.map(async (item) => {
         const newQty = (item.product as Product).quantity - item.quantity
-        this.product.findOneAndUpdate({ _id: item.product._id }, { $set: { quantity: newQty < 0 ? 0 : newQty } })
+        await this.product.findOneAndUpdate({ _id: item.product._id }, { $set: { quantity: newQty < 0 ? 0 : newQty } })
       })
+      await Promise.all(promises)
       return captureData;
     } catch (error) {
       throw new Error(error.message)

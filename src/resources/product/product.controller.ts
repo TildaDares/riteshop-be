@@ -21,7 +21,6 @@ class ProductController implements Controller {
   }
 
   private initializeRoutes(): void {
-    this.router.get(`${this.path}/search/:name`, this.findProducts);
     this.router.get(`${this.path}/:id`, this.getProductById);
     this.router.put(`${this.path}/:id`, authenticated, isAdmin, validationMiddleware(validate.create), this.update);
     this.router.delete(`${this.path}/:id`, authenticated, isAdmin, this.delete);
@@ -31,8 +30,8 @@ class ProductController implements Controller {
 
   private getAllProducts = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
-      const products = await this.ProductService.getAllProducts();
-      res.status(200).json({ products })
+      const { products, count, total } = await this.ProductService.getAllProducts(req.query);
+      res.status(200).json({ products, count, total })
     } catch (error) {
       next(new HTTPException(404, error.message));
     }
@@ -42,15 +41,6 @@ class ProductController implements Controller {
     try {
       const product = await this.ProductService.getProductById(req.params.id);
       res.status(200).json({ product })
-    } catch (error) {
-      next(new HTTPException(404, error.message));
-    }
-  }
-
-  private findProducts = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
-    try {
-      const products = await this.ProductService.findProducts(req.params.name);
-      res.status(200).json({ products })
     } catch (error) {
       next(new HTTPException(404, error.message));
     }
