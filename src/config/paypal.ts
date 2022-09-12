@@ -1,5 +1,5 @@
 const base = "https://api-m.sandbox.paypal.com";
-import fetch from 'node-fetch';
+import fetch, { Response } from 'node-fetch';
 
 class Paypal {
   public async createOrder(price: string) {
@@ -55,7 +55,7 @@ class Paypal {
     return jsonData.access_token;
   }
 
-  private async handleResponse(response) {
+  private async handleResponse(response: Response) {
     if (response.status === 200 || response.status === 201) {
       return response.json();
     }
