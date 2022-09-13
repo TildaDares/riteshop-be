@@ -19,10 +19,14 @@ class OrderService {
 
   public async getAll(): Promise<Order[]> {
     try {
-      const orders = await this.order.find({}).populate({
-        path: 'items.product',
-        select: 'image price quantity name',
-      }).sort({ createdAt: -1 }).exec();
+      const orders = await this.order
+        .find({})
+        .populate({
+          path: 'items.product',
+          select: 'image price quantity name',
+        })
+        .populate('user', 'name email')
+        .sort({ createdAt: -1 }).exec();
       if (!orders) {
         throw new Error("No orders found");
       }
@@ -34,14 +38,20 @@ class OrderService {
 
   public async getOrderById(id: string, user: User): Promise<Order> {
     try {
-      const order = await this.order.findById(id).populate({
-        path: 'items.product',
-        select: 'image price quantity name',
-      }).exec();
+      const order = await this.order
+        .findById(id)
+        .populate({
+          path: 'items.product',
+          select: 'image price quantity name',
+        })
+        .populate('user', 'name email')
+        .exec();
       if (!order) {
         throw new Error("Order not found");
       }
-      if (order?.user.toString() != user._id?.toString() && user.role !== 'admin') {
+      if (order?.user._id.toString() != user._id?.toString() && user.role !== 'admin') {
+        console.log(order.user._id)
+        console.log(user._id)
         throw new HTTPException(401, "You don't have enough permissions to perform this action");
       }
       return order;
@@ -55,10 +65,14 @@ class OrderService {
 
   public async getOrdersByUser(userId: string): Promise<Order[]> {
     try {
-      const orders = await this.order.find({ user: userId }).populate({
-        path: 'items.product',
-        select: 'image price quantity name',
-      }).sort({ createdAt: -1 }).exec();
+      const orders = await this.order
+        .find({ user: userId })
+        .populate({
+          path: 'items.product',
+          select: 'image price quantity name',
+        })
+        .populate('user', '_id name email')
+        .sort({ createdAt: -1 }).exec();
       if (!orders) {
         throw new Error("No orders found");
       }
@@ -80,10 +94,13 @@ class OrderService {
   public async capturePayment(paypalOrderId: string, orderId: string) {
     try {
       const captureData = await this.paypal.capturePayment(paypalOrderId);
-      const order = await this.order.findOneAndUpdate({ _id: orderId }, { $set: { isPaid: true, paymentMethod: 'paypal' } }).populate({
-        path: 'items.product',
-        select: 'price quantity',
-      }).exec();
+      const order = await this.order
+        .findOneAndUpdate({ _id: orderId }, { $set: { isPaid: true, paymentMethod: 'paypal' } })
+        .populate({
+          path: 'items.product',
+          select: 'price quantity',
+        })
+        .exec();
       const promises = order?.items.map(async (item) => {
         const newQty = (item.product as Product).quantity - item.quantity
         await this.product.findOneAndUpdate({ _id: item.product._id }, { $set: { quantity: newQty < 0 ? 0 : newQty } })
@@ -127,7 +144,9 @@ class OrderService {
     try {
       await this.getOrderById(id, user)
       // only update orders that have not been delivered
-      const updatedOrder = await this.order.findOneAndUpdate({ _id: id, isDelivered: false }, { $set: body }, { new: true }).exec() as Order
+      const updatedOrder = await this.order
+        .findOneAndUpdate({ _id: id, isDelivered: false }, { $set: body }, { new: true })
+        .exec() as Order
       return updatedOrder
     } catch (error) {
       if (error instanceof HTTPException) {

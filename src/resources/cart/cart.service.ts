@@ -11,10 +11,14 @@ class CartService {
 
   public async getCartByUser(userId: string): Promise<Cart> {
     try {
-      const cart = await this.cart.findOne({ user: userId }).populate({
-        path: 'items.product',
-        select: 'name description price image quantity',
-      }).exec();
+      const cart = await this.cart
+        .findOne({ user: userId })
+        .populate({
+          path: 'items.product',
+          select: 'name description price image quantity',
+        })
+        .populate('user', 'name email')
+        .exec();
       if (!cart) {
         throw new Error("Unable to get cart");
       }
