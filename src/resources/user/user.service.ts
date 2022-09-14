@@ -63,6 +63,19 @@ class UserService {
     }
   }
 
+  public async getAll() {
+    try {
+      const users = await this.user.find({}).sort({ createdAt: -1 });
+      const count = await this.user.countDocuments()
+      if (!users) {
+        throw new Error('No users found')
+      }
+      return { users, count }
+    } catch (error) {
+      throw new Error("Unable to get users");
+    }
+  }
+
   public async getUserById(id: string) {
     try {
       const user = await this.user.findById(id, { password: 0 });

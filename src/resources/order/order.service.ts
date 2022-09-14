@@ -17,7 +17,7 @@ class OrderService {
 
   private paypal = new Paypal();
 
-  public async getAll(): Promise<Order[]> {
+  public async getAll() {
     try {
       const orders = await this.order
         .find({})
@@ -27,10 +27,11 @@ class OrderService {
         })
         .populate('user', 'name email')
         .sort({ createdAt: -1 }).exec();
+      const count = this.order.countDocuments()
       if (!orders) {
         throw new Error("No orders found");
       }
-      return orders;
+      return { orders, count };
     } catch (error) {
       throw new Error(error.message);
     }
@@ -44,14 +45,12 @@ class OrderService {
           path: 'items.product',
           select: 'image price quantity name',
         })
-        .populate('user', 'name email')
+        .populate('user', 'name email role')
         .exec();
       if (!order) {
         throw new Error("Order not found");
       }
       if (order?.user._id.toString() != user._id?.toString() && user.role !== 'admin') {
-        console.log(order.user._id)
-        console.log(user._id)
         throw new HTTPException(401, "You don't have enough permissions to perform this action");
       }
       return order;

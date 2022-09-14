@@ -34,8 +34,8 @@ class OrderController implements Controller {
 
   private getAll = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
-      const orders = await this.OrderService.getAll();
-      res.status(200).json({ orders })
+      const { orders, count } = await this.OrderService.getAll();
+      res.status(200).json({ orders, count })
     } catch (error) {
       next(new HTTPException(404, error.message));
     }
