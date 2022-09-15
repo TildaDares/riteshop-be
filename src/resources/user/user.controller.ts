@@ -8,6 +8,7 @@ import User from "@/resources/user/user.interface";
 import authenticated from "@/middleware/authenticated.middleware";
 import { redisClient as client } from '@/config/redis';
 import isAuthorized from '@/utils/helpers/authorization';
+import isAdmin from "@/middleware/authorized.middleware";
 
 class UserController implements Controller {
   public path = "/users";
@@ -37,6 +38,7 @@ class UserController implements Controller {
       this.logout
     );
     this.router.get(`${this.path}`, authenticated, this.getUser);
+    this.router.get(`${this.path}/all`, authenticated, isAdmin, this.getAll);
     this.router.get(`${this.path}/:id`, authenticated, this.getUserById);
     this.router.put(`${this.path}/:id`, authenticated, validationMiddleware(validate.update), this.update);
     this.router.put(`${this.path}/change-password/:id`, authenticated, validationMiddleware(validate.changePassword), this.changePassword);
@@ -91,6 +93,15 @@ class UserController implements Controller {
 
     res.status(200).json({ user: req.user });
   };
+
+  private getAll = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+    try {
+      const { users, count } = await this.UserService.getAll();
+      res.status(200).json({ users, count });
+    } catch (error) {
+      next(new HTTPException(400, error.message));
+    }
+  }
 
   private getUserById = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {

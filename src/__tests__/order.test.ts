@@ -208,7 +208,7 @@ describe("Orders", () => {
 
       expect(res.statusCode).toEqual(200);
       expect(res.body.orders).toBeTruthy();
-      expect(res.body.orders[0].user.toString()).toEqual(customerId);
+      expect(res.body.orders[0].user._id.toString()).toEqual(customerId);
     });
 
     test("should get all orders by user if logged in user is admin", async () => {
@@ -218,7 +218,7 @@ describe("Orders", () => {
 
       expect(res.statusCode).toEqual(200);
       expect(res.body.orders).toBeTruthy();
-      expect(res.body.orders[0].user.toString()).toEqual(customerId);
+      expect(res.body.orders[0].user._id.toString()).toEqual(customerId);
     });
 
     test("should return 401 if user is not owner of order", async () => {

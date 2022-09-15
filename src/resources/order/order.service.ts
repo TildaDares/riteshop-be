@@ -17,7 +17,7 @@ class OrderService {
 
   private paypal = new Paypal();
 
-  public async getAll(): Promise<Order[]> {
+  public async getAll() {
     try {
       const orders = await this.order
         .find({})
@@ -25,12 +25,13 @@ class OrderService {
           path: 'items.product',
           select: 'image price quantity name',
         })
-        .populate('user', 'name email')
+        .populate('user', 'role name email')
         .sort({ createdAt: -1 }).exec();
+      const count = await this.order.countDocuments()
       if (!orders) {
         throw new Error("No orders found");
       }
-      return orders;
+      return { orders, count };
     } catch (error) {
       throw new Error(error.message);
     }
@@ -44,14 +45,12 @@ class OrderService {
           path: 'items.product',
           select: 'image price quantity name',
         })
-        .populate('user', 'name email')
+        .populate('user', 'name email role')
         .exec();
       if (!order) {
         throw new Error("Order not found");
       }
       if (order?.user._id.toString() != user._id?.toString() && user.role !== 'admin') {
-        console.log(order.user._id)
-        console.log(user._id)
         throw new HTTPException(401, "You don't have enough permissions to perform this action");
       }
       return order;
@@ -103,9 +102,10 @@ class OrderService {
         .exec();
       const promises = order?.items.map(async (item) => {
         const newQty = (item.product as Product).quantity - item.quantity
-        await this.product.findOneAndUpdate({ _id: item.product._id }, { $set: { quantity: newQty < 0 ? 0 : newQty } })
+        return await this.product.findOneAndUpdate({ _id: item.product._id }, { $set: { quantity: newQty < 0 ? 0 : newQty } }) as Product
       })
-      await Promise.all(promises)
+      const tuple = <T extends any[]>(...args: T): T => args
+      await Promise.all(tuple(promises))
       return captureData;
     } catch (error) {
       throw new Error(error.message)

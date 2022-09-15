@@ -49,10 +49,15 @@ class RequestRoleService {
     }
   }
 
-  public async getAll(): Promise<RequestRole[]> {
+  public async getAll() {
     try {
-      const requests = await this.requestRole.find();
-      return requests;
+      const requests = await this.requestRole.find().populate('requester').sort({ createdAt: -1 });
+      if (!requests) {
+        throw new Error("There are no requests")
+      }
+      console.log(requests)
+      const count = await this.requestRole.countDocuments()
+      return { requests, count };
     } catch (error) {
       throw new Error(error.message);
     }
@@ -60,7 +65,7 @@ class RequestRoleService {
 
   public async getByRequester(requester: string): Promise<RequestRole[]> {
     try {
-      const requests = await this.requestRole.find({ requester });
+      const requests = await this.requestRole.find({ requester }).sort({ createdAt: -1 });
       return requests;
     } catch (error) {
       throw new Error(error.message);
