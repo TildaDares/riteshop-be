@@ -40,7 +40,6 @@ class ProductService {
       if (product?.image && typeof product.image != 'string') {
         const imageURL = await this.uploadImage(product?.image as Buffer)
         product.image = imageURL
-        console.log(imageURL)
       }
       const newProduct = await this.product.create(product);
       return newProduct;
@@ -54,7 +53,6 @@ class ProductService {
       if (product?.image && typeof product.image != 'string') {
         const imageURL = await this.uploadImage(product?.image as Buffer)
         product.image = imageURL
-        console.log(imageURL)
       }
       const updatedProduct = await this.product
         .findByIdAndUpdate(id, product, { new: true })

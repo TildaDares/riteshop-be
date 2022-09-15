@@ -55,7 +55,6 @@ class RequestRoleService {
       if (!requests) {
         throw new Error("There are no requests")
       }
-      console.log(requests)
       const count = await this.requestRole.countDocuments()
       return { requests, count };
     } catch (error) {

@@ -5,7 +5,7 @@ import App from "@/app";
 import UserController from "@/resources/user/user.controller";
 import UserModel from "@/resources/user/user.model";
 import RequestRoleController from "@/resources/request-role/requestRole.controller";
-import { ADMIN, CUSTOMERONE, CUSTOMERTWO } from "./seed";
+import { ADMIN, CUSTOMERONE, CUSTOMERTWO } from "./fixtures";
 
 const app = new App([new UserController(), new RequestRoleController()]).app;
 const request = supertest(app);

@@ -7,7 +7,7 @@ import ProductController from "@/resources/product/product.controller";
 import UserController from "@/resources/user/user.controller";
 import Product from "@/resources/product/product.interface";
 import UserModel from "@/resources/user/user.model";
-import { ADMIN, CUSTOMERONE, CUSTOMERTWO, PRODUCTONE, PRODUCTTWO } from "./seed";
+import { ADMIN, CUSTOMERONE, CUSTOMERTWO, PRODUCTONE, PRODUCTTWO } from "./fixtures";
 
 const app = new App([new ProductController(), new UserController(), new CartController()]).app;
 const request = supertest(app);
@@ -187,6 +187,7 @@ describe("Cart", () => {
           description: "dummy cart product",
           price: 1000,
           quantity: 20,
+          image: 'https://res.cloudinary.com/da8siyil9/image/upload/v1663177829/riteshop/products/afbucal68foskbepoekq.png'
         })
         .set("Authorization", `Bearer ${adminToken}`)
 

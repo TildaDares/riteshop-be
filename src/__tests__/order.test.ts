@@ -7,7 +7,7 @@ import ProductController from "@/resources/product/product.controller";
 import OrderController from "@/resources/order/order.controller";
 import UserController from "@/resources/user/user.controller";
 import UserModel from "@/resources/user/user.model";
-import { ADMIN, CUSTOMERONE as CUSTOMER, CUSTOMERTWO, PRODUCTONE, PRODUCTTWO } from "./seed";
+import { ADMIN, CUSTOMERONE as CUSTOMER, CUSTOMERTWO, PRODUCTONE, PRODUCTTWO } from "./fixtures";
 import Product from "@/resources/product/product.interface";
 
 const app = new App([new ProductController(), new OrderController(), new UserController(), new CartController()]).app;

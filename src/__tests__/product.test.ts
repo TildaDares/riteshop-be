@@ -5,12 +5,13 @@ import App from "@/app";
 import ProductController from "@/resources/product/product.controller";
 import UserController from "@/resources/user/user.controller";
 import UserModel from "@/resources/user/user.model";
-import { ADMIN, CUSTOMERONE } from "./seed";
+import { ADMIN, CUSTOMERONE } from "./fixtures";
 
 const app = new App([new ProductController(), new UserController()]).app;
 const request = supertest(app);
 let customerToken: string;
 let adminToken: string;
+const image = 'https://res.cloudinary.com/da8siyil9/image/upload/v1663177829/riteshop/products/afbucal68foskbepoekq.png'
 
 describe("Product", () => {
   beforeAll(async () => {
@@ -50,6 +51,7 @@ describe("Product", () => {
           description: "first product",
           price: 600,
           quantity: 300,
+          image
         })
         .set("Authorization", `Bearer ${adminToken}`)
 
@@ -66,6 +68,7 @@ describe("Product", () => {
           description: "tyres for toy cars",
           price: 1000,
           quantity: 400,
+          image
         })
         .set("Authorization", `Bearer ${customerToken}`)
 
@@ -79,6 +82,7 @@ describe("Product", () => {
           description: "first product",
           price: 600,
           quantity: 300,
+          image
         })
         .set("Authorization", `Bearer ${adminToken}`)
 
@@ -105,6 +109,7 @@ describe("Product", () => {
           description: "bed spreads are good for you",
           price: 1000,
           quantity: 100,
+          image
         })
         .set("Authorization", `Bearer ${adminToken}`)
         .expect(201);
@@ -129,6 +134,7 @@ describe("Product", () => {
           description: "second product",
           price: 200,
           quantity: 100,
+          image
         })
         .set("Authorization", `Bearer ${adminToken}`)
         .expect(201);
@@ -139,6 +145,7 @@ describe("Product", () => {
         description: "third product",
         price: 500,
         quantity: 200,
+        image
       };
 
       const res = await request
@@ -159,6 +166,7 @@ describe("Product", () => {
           description: "fifth product",
           price: 400,
           quantity: 400,
+          image
         })
         .set("Authorization", `Bearer ${adminToken}`)
         .expect(201);
@@ -184,6 +192,7 @@ describe("Product", () => {
           description: "fourth product",
           price: 400,
           quantity: 400,
+          image
         })
         .set("Authorization", `Bearer ${adminToken}`)
         .expect(201);
@@ -211,6 +220,7 @@ describe("Product", () => {
           description: "suitcases for travelling",
           price: 5000,
           quantity: 1200,
+          image
         })
         .set("Authorization", `Bearer ${adminToken}`)
         .expect(201);
@@ -232,6 +242,7 @@ describe("Product", () => {
           description: "bathing suits for bathing",
           price: 1000,
           quantity: 1300,
+          image
         })
         .set("Authorization", `Bearer ${adminToken}`)
         .expect(201);

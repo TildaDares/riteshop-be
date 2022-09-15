@@ -4,7 +4,7 @@ import { connect, disconnect, connection } from "mongoose";
 import App from "@/app";
 import UserController from "@/resources/user/user.controller";
 import UserModel from "@/resources/user/user.model";
-import { ADMIN, CUSTOMERONE as CUSTOMER } from "./seed";
+import { ADMIN, CUSTOMERONE as CUSTOMER } from "./fixtures";
 
 const app = new App([new UserController()]).app;
 const request = supertest(app);
