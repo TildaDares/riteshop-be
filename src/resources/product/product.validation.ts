@@ -13,7 +13,7 @@ const create = Joi.object({
   quantity: Joi.number()
     .min(0)
     .required(),
-  image: Joi.string(),
+  image: Joi.binary(),
 });
 
 export default { create };

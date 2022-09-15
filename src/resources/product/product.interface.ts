@@ -1,11 +1,11 @@
-import { Document} from 'mongoose';
+import { Document } from 'mongoose';
 
 interface Product extends Document {
   name: string;
   description: string;
   price: number;
   quantity: number;
-  image: string;
+  image: string | Buffer;
 }
 
 export default Product;
