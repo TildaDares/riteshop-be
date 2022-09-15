@@ -4,7 +4,7 @@
 
 Both customers or sales agent can browse, filter and search through the product catalog to find items. They can then add items to their carts and the quantities of items in the cart can be updated. 
 
-This project is built with **NodeJS**, **TypeScript**, **ExpressJS** and **MongoDB (database)**. User authorisation and authentication will be handled with the **PassportJS** authentication middleware.
+This project is built with **NodeJS**, **TypeScript**, **ExpressJS** and **MongoDB (database)**. User authorisation and authentication will be handled with the **PassportJS** authentication middleware. Payment system is implemented with **Paypal** and **Cloudinary** is used for storing images.
 ## Development
 
 To run this project on your local machine, do the following:
@@ -15,10 +15,9 @@ To run this project on your local machine, do the following:
 - Copy the contents of the `env.example` file and rename to `.env`. You can change the values to setup your own database configuration.
 - Start the server by running `npm start`. This command will automatically run your app on http://localhost:8000/
 
+If you have docker
 The frontend app of this project can be found [here](https://gitlab.com/deimosdev/internships/se/projects/mathilda-riteshop/riteshop-fe).
 
 ## Testing
 
-Run tests with `npm test`
-
-## API Endpoints
+Run tests with `npm test` or `npm t`
