@@ -62,8 +62,8 @@ class RoleController implements Controller {
 
   private getAll = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
-      const requests = await this.RequestRoleService.getAll();
-      res.status(200).json({ requests })
+      const { requests, count } = await this.RequestRoleService.getAll();
+      res.status(200).json({ requests, count })
     } catch (error) {
       next(new HTTPException(404, error.message));
     }

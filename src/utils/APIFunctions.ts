@@ -65,9 +65,9 @@ class APIFunctions {
     return this
   }
 
-  count() {
-    this.total = this.model.countDocuments();
-    return this;
+  async count() {
+    this.total = await this.model.countDocuments();
+    return this.total;
   }
 }
 
