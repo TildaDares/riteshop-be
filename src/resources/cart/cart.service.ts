@@ -19,10 +19,7 @@ class CartService {
         })
         .populate('user', 'name email')
         .exec();
-      if (!cart) {
-        throw new Error("Unable to get cart");
-      }
-      return cart;
+      return cart as Cart;
     } catch (error) {
       throw new Error("Unable to get cart");
     }

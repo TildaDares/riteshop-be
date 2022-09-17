@@ -1,5 +1,4 @@
 import express, { Application } from 'express';
-import mongoose from 'mongoose';
 import cors from 'cors';
 import morgan from 'morgan';
 import helmet from 'helmet';
@@ -9,6 +8,7 @@ import ErrorMiddleware from '@/middleware/error.middleware';
 import '@/config/passport';
 import { redisConfig } from '@/config/redis';
 import passport from 'passport';
+import { connectDB } from '@/config/connectDB';
 
 class App {
   public app: Application;
@@ -17,18 +17,11 @@ class App {
     this.app = express();
 
     if (process.env.NODE_ENV !== 'test') {
-      this.initializeDBConnection();
+      connectDB()
     }
     this.initializeMiddleware();
     this.initializeControllers(controllers);
     this.initializeErrorHandling();
-  }
-
-  private initializeDBConnection(): void {
-    const MONGODB_URI = process.env.MONGODB_URI as string;
-    mongoose.connect(MONGODB_URI);
-    const db = mongoose.connection;
-    db.on("error", console.error.bind(console, "MongoDB connection error:"));
   }
 
   private initializeMiddleware(): void {

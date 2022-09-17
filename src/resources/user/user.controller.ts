@@ -94,7 +94,7 @@ class UserController implements Controller {
     res.status(200).json({ user: req.user });
   };
 
-  private getAll = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+  private getAll = async (_req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
       const { users, count } = await this.UserService.getAll();
       res.status(200).json({ users, count });

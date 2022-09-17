@@ -17,10 +17,7 @@ const register = Joi.object({
 const update = Joi.object({
   name: Joi.string()
     .max(30)
-    .required(),
-  email: Joi.string()
-    .email()
-    .required(),
+    .required()
 });
 
 const changePassword = Joi.object({

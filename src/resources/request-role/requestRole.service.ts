@@ -52,9 +52,6 @@ class RequestRoleService {
   public async getAll() {
     try {
       const requests = await this.requestRole.find().populate('requester').sort({ createdAt: -1 });
-      if (!requests) {
-        throw new Error("There are no requests")
-      }
       const count = await this.requestRole.countDocuments()
       return { requests, count };
     } catch (error) {
