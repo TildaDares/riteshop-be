@@ -2,7 +2,6 @@ import ProductModel from "@/resources/product/product.model";
 import Product from "@/resources/product/product.interface";
 import APIFunctions from "@/utils/APIFunctions";
 import { ParsedQs } from "qs";
-import { uploadFromBuffer } from "@/config/cloudinary";
 
 class ProductService {
   private product = ProductModel;
@@ -37,10 +36,6 @@ class ProductService {
 
   public async create(product: Product): Promise<Product> {
     try {
-      if (product?.image && typeof product.image != 'string') {
-        const imageURL = await this.uploadImage(product?.image as Buffer)
-        product.image = imageURL
-      }
       const newProduct = await this.product.create(product);
       return newProduct;
     } catch (error) {
@@ -50,10 +45,6 @@ class ProductService {
 
   public async update(id: string, product: Product) {
     try {
-      if (product?.image && typeof product.image != 'string') {
-        const imageURL = await this.uploadImage(product?.image as Buffer)
-        product.image = imageURL
-      }
       const updatedProduct = await this.product
         .findByIdAndUpdate(id, product, { new: true })
         .exec();
@@ -76,14 +67,6 @@ class ProductService {
     } catch (error) {
       throw new Error("Unable to delete product");
     }
-  }
-
-  private async uploadImage(image: Buffer): Promise<string> {
-    const imageURL = await uploadFromBuffer(image, 'products', {
-      height: 600,
-      width: 600,
-    });
-    return imageURL.secure_url
   }
 }
 

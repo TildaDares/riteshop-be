@@ -25,7 +25,6 @@
   "dependencies": {
     "async": "3.2.4",
     "bcrypt": "5.0.1",
-    "cloudinary": "1.32.0",
     "compression": "1.7.4",
     "cookie-parser": "1.4.4",
     "cors": "2.8.5",
@@ -43,8 +42,7 @@
     "node-fetch": "2.6.7",
     "passport": "0.6.0",
     "passport-google-oauth20": "2.0.0",
-    "redis": "4.2.0",
-    "streamifier": "0.1.1"
+    "redis": "4.2.0"
   },
   "devDependencies": {
     "@types/bcrypt": "5.0.0",

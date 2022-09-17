@@ -12,9 +12,6 @@ function validateEnv(): void {
     GOOGLE_CLIENT_SECRET: str(),
     PAYPAL_CLIENT_ID: str(),
     PAYPAL_APP_SECRET: str(),
-    CLOUDINARY_NAME: str(),
-    CLOUDINARY_API_KEY: str(),
-    CLOUDINARY_API_SECRET: str(),
   });
 }
 

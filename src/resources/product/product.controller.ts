@@ -22,7 +22,7 @@ class ProductController implements Controller {
 
   private initializeRoutes(): void {
     this.router.get(`${this.path}/:id`, this.getProductById);
-    this.router.put(`${this.path}/:id`, authenticated, isAdmin, validationMiddleware(validate.create), this.update);
+    this.router.put(`${this.path}/:id`, authenticated, isAdmin, validationMiddleware(validate.edit), this.update);
     this.router.delete(`${this.path}/:id`, authenticated, isAdmin, this.delete);
     this.router.post(`${this.path}`, authenticated, isAdmin, validationMiddleware(validate.create), this.create);
     this.router.get(`${this.path}`, this.getAllProducts);

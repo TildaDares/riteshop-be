@@ -13,7 +13,19 @@ const create = Joi.object({
   quantity: Joi.number()
     .min(0)
     .required(),
-  image: Joi.alternatives().try(Joi.string(), Joi.binary()).required()
+  image: Joi.string().required()
 });
 
-export default { create };
+const edit = Joi.object({
+  name: Joi.string()
+    .min(3),
+  description: Joi.string()
+    .min(3),
+  price: Joi.number()
+    .min(0),
+  quantity: Joi.number()
+    .min(0),
+  image: Joi.string()
+});
+
+export default { create, edit };
