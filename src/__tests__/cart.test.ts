@@ -7,12 +7,11 @@ import ProductController from "@/resources/product/product.controller";
 import UserController from "@/resources/user/user.controller";
 import Product from "@/resources/product/product.interface";
 import UserModel from "@/resources/user/user.model";
-import { ADMIN, CUSTOMERONE, CUSTOMERTWO, PRODUCTONE, PRODUCTTWO } from "./fixtures";
+import { ADMIN, CUSTOMERONE, PRODUCTONE, PRODUCTTWO } from "./fixtures";
 
 const app = new App([new ProductController(), new UserController(), new CartController()]).app;
 const request = supertest(app);
 let customerToken: string;
-let customerToken2: string;
 let adminToken: string;
 let product1: Product;
 let product2: Product;
@@ -28,12 +27,6 @@ describe("Cart", () => {
       .send(CUSTOMERONE)
 
     customerToken = resCust1.body.token;
-
-    const resCust2 = await request
-      .post("/api/users/register")
-      .send(CUSTOMERTWO)
-
-    customerToken2 = resCust2.body.token;
 
     await UserModel.create(ADMIN); // create admin user
 
@@ -150,14 +143,6 @@ describe("Cart", () => {
       expect(res.statusCode).toEqual(200);
       expect(res.body.cart._id).toBeTruthy();
       expect(res.body.cart.items).toHaveLength(2);
-    });
-
-    test("should return 404 if user has no cart", async () => {
-      const res = await request
-        .get("/api/cart")
-        .set("Authorization", `Bearer ${customerToken2}`)
-
-      expect(res.statusCode).toEqual(404);
     });
   });
 

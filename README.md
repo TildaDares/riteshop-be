@@ -13,7 +13,13 @@ To run this project on your local machine, do the following:
 - Run `cd riteshop-be/` to navigate into the project folder.
 - Run `npm i` to install all the packages.
 - Copy the contents of the `env.example` file and rename to `.env`. You can change the values to setup your own database configuration.
+- Run `npx ts-node src/seeder/seed.ts` to seed the database with sample data
 - Start the server by running `npm start`. This command will automatically run your app on http://localhost:8000/
+- You can log in as admin with the following credentials:
+  ```
+  email: admin@gmail.com
+  password: password123
+  ```
 
 If you have docker
 The frontend app of this project can be found [here](https://gitlab.com/deimosdev/internships/se/projects/mathilda-riteshop/riteshop-fe).
