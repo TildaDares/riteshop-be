@@ -5,7 +5,7 @@ interface Product extends Document {
   description: string;
   price: number;
   quantity: number;
-  image: string | Buffer;
+  image: string;
 }
 
 export default Product;
