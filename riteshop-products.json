@@ -1,4 +1,0 @@
-{"_id":{"$oid":"62d970f37d644d33a0142658"},"name":"first","description":"first product","price":100,"quantity":100,"createdAt":{"$date":"2022-07-21T15:29:55.917Z"},"updatedAt":{"$date":"2022-07-21T16:27:45.684Z"},"__v":0}
-{"_id":{"$oid":"62d971137d644d33a014265b"},"name":"second","description":"second product","price":200,"quantity":100,"createdAt":{"$date":"2022-07-21T15:30:27.79Z"},"updatedAt":{"$date":"2022-07-21T15:30:27.79Z"},"__v":0}
-{"_id":{"$oid":"62d9780e9bb5c650c53ee7d5"},"name":"third","description":"third product","price":300,"quantity":300,"createdAt":{"$date":"2022-07-21T16:00:14.816Z"},"updatedAt":{"$date":"2022-07-21T16:00:14.816Z"},"__v":0}
-{"_id":{"$oid":"62d97d7df7bfcd088f21345e"},"name":"fourth","description":"fourth product","price":500,"quantity":200,"createdAt":{"$date":"2022-07-21T16:23:25.144Z"},"updatedAt":{"$date":"2022-07-21T16:23:25.144Z"},"__v":0}
