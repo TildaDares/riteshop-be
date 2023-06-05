@@ -1,5 +1,13 @@
 # This is a basic workflow that is manually triggered
 
+on:
+  push:
+    branches:
+      - main
+      - master
+permissions:
+  contents: write
+
 name: Code Coverage
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
@@ -12,6 +20,7 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Runs a single command using the runners shell
+    - uses: codecov/codecov-action@v3
     - name: Upload coverage reports to Codecov
-      uses: codecov/codecov-action@v3
-      env: CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      env: 
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
